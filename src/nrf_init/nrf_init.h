@@ -9,22 +9,56 @@
 
 typedef char pipe_t[6];
 
-struct Answer {
-  uint8_t data[32];
-  bool isData = false;
-  bool success = false;
-  uint32_t start = 0;
-  uint32_t end = 0;
+struct SlaveData {
+  // Заполняет slave
+  uint32_t btnTime = 0; // 4b
+  uint8_t dataOk = 0; // 1b
+  bool isBtn = false; // 1b
+  // Заполняет master при приёме
+  bool success = false; // 1b
+  bool isData = false; // 1b
+  uint8_t color = 0; // 1b
+  uint8_t _nop[23]; // 23b
 };
+
+struct MasterData {
+  uint8_t dataOk = 0; // 1b
+  // Заполняет master
+  uint32_t masterTime = 0; // 4b
+  // 0 -- UNKNOWN
+  // 1 -- Время не идёт
+  // 2 -- Время идёт
+  // 3 -- Кто-то отвечает
+  uint8_t state = 0; // 1b
+  bool falseStart[4] = {0}; // 4b
+  // Номер slave, который отвечает
+  uint8_t answer = 0; // 1b
+
+  // Заполняет slave при приёме
+  uint32_t start = 0; // 4b
+  uint32_t end = 0; // 4b
+  bool success = false; // 1b
+  bool isData = false; // 1b
+  uint8_t _nop[11]; // 11b
+};
+
+void printSD(SlaveData &sd);
+void printMD(MasterData &md);
+
+static_assert(sizeof(SlaveData) == 32, "sizeof(SlaveData) != 32");
+static_assert(sizeof(MasterData) == 32, "sizeof(MasterData) != 32");
 
 class MyRadio {
 public:
   pipe_t myPipe;
-  RF24 &radio = *new RF24(9, 10);
+  RF24 &radio = *new RF24(4, 8);
   MyRadio(pipe_t myPipe);
   void masterMode();
   void slaveMode();
-  Answer masterSend(uint8_t data[32], pipe_t pipe);
+  void printDetails();
+  void slaveSend(SlaveData &sd, MasterData &md);
+  void masterReceiveFromSlave(SlaveData &sd, MasterData &md);
+  void masterSendToSlave(uint8_t askPipeN, MasterData &md);
 private:
   void init();
 };
