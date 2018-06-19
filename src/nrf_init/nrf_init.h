@@ -76,10 +76,10 @@ private:
 #define PIPE_BLUE "Blue_"
 #define PIPE_YELLOW "Yellw"
 
-const byte PipeMaster[6] = "Mastr";
+const byte pipeMaster[6] = PIPE_MASTER;
 
-const byte PipeSlave[4][6] = {
-    "Red__", "Green", "Blue_", "Yellw"
+const byte pipeSlave[4][6] = {
+    PIPE_RED, PIPE_GREEN, PIPE_BLUE, PIPE_YELLOW
 };
 
 

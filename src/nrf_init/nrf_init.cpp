@@ -57,33 +57,37 @@ void MyRadio::init() {
     radio.setDataRate(RF24_1MBPS); //скорость обмена. На выбор RF24_2MBPS, RF24_1MBPS, RF24_250KBPS
     radio.setCRCLength(RF24_CRC_16); // длинна контрольной суммы 8-bit or 16-bit
     radio.setChannel(0x7f);         // установка канала
-    radio.openWritingPipe((byte *) myPipe); // На запись
+    radio.openReadingPipe(1, (byte *) myPipe); // Откуда читаем
+    /*
+    Master:                      Slave:
+    W: Red      ==============>  R: _Red_
+    R: _Master_ <==============  W: Master
+    */
 };
+
 
 void MyRadio::printDetails() {
-  radio.printDetails();
+    radio.printDetails();
 };
 
-
+// Не стоит пока переключаться между режимами!
 void MyRadio::slaveMode() {
     // Listening mode от master
-    radio.openReadingPipe(1, (byte *) PIPE_MASTER);
+    radio.openWritingPipe((byte *) PIPE_MASTER);
     radio.startListening();
     radio.powerUp();               // включение или пониженное потребление powerDown - powerUp
 }
 
-
+// Не стоит пока переключаться между режимами!
 void MyRadio::masterMode() {
-    // Send mode на все slave
-    radio.openReadingPipe(1, (byte *) PIPE_RED);
-    // radio.openReadingPipe(2, (byte *) PIPE_GREEN);
-    // radio.openReadingPipe(3, (byte *) PIPE_BLUE);
-    // radio.openReadingPipe(4, (byte *) PIPE_YELLOW);
+    // Send mode
+    radio.openReadingPipe(1, (byte *) PIPE_MASTER);
     radio.startListening();
     radio.stopListening();
     radio.powerUp();               // включение или пониженное потребление powerDown - powerUp
 }
 
+// Только в режиме master!
 void MyRadio::changePipe(byte * pipe) {
     radio.openWritingPipe((byte *) pipe);
 }
@@ -134,8 +138,9 @@ uint8_t MyRadio::slaveReceive(SlaveData &sd, MasterData &md) {
         } else {
             sd.error = ERR_RECEIVE;
         }
-        return 1;
     } else {
         return 0;
     }
+    if (sd.error) return 0;
+    return 1;
 }
