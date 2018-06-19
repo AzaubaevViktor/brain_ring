@@ -24,14 +24,17 @@ void loop() {
   memset(&md, 0, 32);
 
 
-  md.masterTime = micros();
-  md.state = 7;
-  md.falseStart[1] = true;
-  md.answer = 2;
-  _radio->masterReceiveFromSlave(sd, md);
-  if (sd.success && sd.isData) {
+  md.state = S_FALSESTART;
+  md.player = 2;
+  _radio->masterSend(sd, md);
+
+  // if (sd.success && sd.isData) {
+    printf("Time: %" PRIu32 "\r\n", md.endSend - md.startSend);
+    printf("Error: %" PRIu8 "\r\n", md.error);
     printSD(sd);
-  }
+  // }
+
+  delay_ms(2000);
 
   // if (sd.success && sd.isData) {
   //   md.masterTime = micros();

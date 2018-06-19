@@ -27,13 +27,9 @@ void loop() {
   memset(&md, 0, 32);
 
   sd.btnTime = i++;
-  sd.isBtn = true;
-  _radio->slaveSend(sd, md);
-
-  // === Print master input ===
-  printMD(md);
-  printf("==========================\n");
-  delay(2000);
+  if (_radio->slaveReceive(sd, md)) {
+      printMD(md);
+  }
 }
 
 // void _loop() {
