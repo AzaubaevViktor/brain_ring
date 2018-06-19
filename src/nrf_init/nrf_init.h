@@ -21,10 +21,11 @@ typedef char pipe_t[6];
 #define ERR_CHECK (13)
 
 /* Это пиздец, товарищи. Подбор работающих параметров -- это, сука, сраный ад.
- * Когда-нибудь быть может я даже этим займусь, но не сейчас точно, ибо надо
- * доделать, и не факт, что при смене оно заработает так, как надо.
- * Поэтому если не понимаешь, что делаешь, не меняй ничего!
- */
+* Когда-нибудь быть может я даже этим займусь, но не сейчас точно, ибо надо
+* доделать, и не факт, что при смене оно заработает так, как надо.
+* Поэтому если не понимаешь, что делаешь, не меняй ничего!
+* Все параметры в этой табличке:
+*/
 
 struct MasterData {
     uint8_t dataCheck = 13; // 1b
@@ -56,17 +57,17 @@ static_assert(sizeof(MasterData) == 32, "sizeof(MasterData) != 32");
 
 class MyRadio {
 public:
-  pipe_t myPipe;
-  RF24 &radio = *new RF24(4, 8);
-  MyRadio(pipe_t myPipe);
-  void masterMode();
-  void slaveMode();
-  void printDetails();
-  void changePipe(byte *pipe);
-  void masterSend(SlaveData &sd, MasterData &md);
-  uint8_t slaveReceive(SlaveData &sd, MasterData &md);
+    pipe_t myPipe;
+    RF24 &radio = *new RF24(4, 8);
+    MyRadio(pipe_t myPipe);
+    void masterMode();
+    void slaveMode();
+    void printDetails();
+    void changePipe(byte *pipe);
+    void masterSend(SlaveData &sd, MasterData &md);
+    uint8_t slaveReceive(SlaveData &sd, MasterData &md);
 private:
-  void init();
+    void init();
 };
 
 #define PIPE_MASTER "Mastr"
@@ -78,7 +79,7 @@ private:
 const byte PipeMaster[6] = "Mastr";
 
 const byte PipeSlave[4][6] = {
-  "Red__", "Green", "Blue_", "Yellw"
+    "Red__", "Green", "Blue_", "Yellw"
 };
 
 

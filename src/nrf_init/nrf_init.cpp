@@ -74,14 +74,14 @@ void MyRadio::slaveMode() {
 
 
 void MyRadio::masterMode() {
-  // Send mode на все slave
-  radio.openReadingPipe(1, (byte *) PIPE_RED);
-  // radio.openReadingPipe(2, (byte *) PIPE_GREEN);
-  // radio.openReadingPipe(3, (byte *) PIPE_BLUE);
-  // radio.openReadingPipe(4, (byte *) PIPE_YELLOW);
-  radio.startListening();
-  radio.stopListening();
-  radio.powerUp();               // включение или пониженное потребление powerDown - powerUp
+    // Send mode на все slave
+    radio.openReadingPipe(1, (byte *) PIPE_RED);
+    // radio.openReadingPipe(2, (byte *) PIPE_GREEN);
+    // radio.openReadingPipe(3, (byte *) PIPE_BLUE);
+    // radio.openReadingPipe(4, (byte *) PIPE_YELLOW);
+    radio.startListening();
+    radio.stopListening();
+    radio.powerUp();               // включение или пониженное потребление powerDown - powerUp
 }
 
 void MyRadio::changePipe(byte * pipe) {
@@ -127,13 +127,13 @@ uint8_t MyRadio::slaveReceive(SlaveData &sd, MasterData &md) {
     if (radio.available(&askPipe)) {
         radio.read(&md, sizeof(MasterData));
         if (13 == md.dataCheck) {
+            sd.slaveTime = micros();
             radio.writeAckPayload(askPipe, &sd, sizeof(SlaveData));
 
             sd.error = NO_ERR;
         } else {
             sd.error = ERR_RECEIVE;
         }
-        printf("! %d !\r\n", askPipe);
         return 1;
     } else {
         return 0;
