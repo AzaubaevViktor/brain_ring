@@ -12,7 +12,7 @@ void setup()
     Serial.begin(115200);
     Serial.print("Hi!\n");
     printf_begin();
-    _radio = new MyRadio(PIPE_GREEN);
+    _radio = new MyRadio(PIPE_RED);
     _radio->slaveMode();
     _radio->printDetails();
 }

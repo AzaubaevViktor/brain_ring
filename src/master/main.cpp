@@ -36,18 +36,17 @@ void loop() {
         _radio->changePipe(pipeSlave[i - 1]);
         _radio->masterSend(sd, md);
 
-        // printf("PLAYER: %d\r\n", i);
-        // printf("Time: %" PRIu32 "\r\n", md.endSend - md.startSend);
-        // printf("Error: %" PRIu8 "\r\n", md.error);
-        // printSD(sd);
-        uint32_t tm = md.endSend - md.startSend;
-        if (md.error) {
-            tm = 1;
-        }
-        printf("%" PRIu32 ",", tm);
-
+        printf("PLAYER: %d\r\n", i);
+        printf("Time: %" PRIu32 "\r\n", md.endSend - md.startSend);
+        printf("Error: %" PRIu8 "\r\n", md.error);
+        printSD(sd);
+        // uint32_t tm = md.endSend - md.startSend;
+        // if (md.error) {
+        //     tm = 1;
+        // }
+        // printf("%" PRIu32 ",", tm);
     }
     printf("\r\n");
-
-    delay_us(1000000/30 - (micros() - start));
+    delay_ms(1000);
+    // delay_us(1000000/1 - (micros() - start));
 }
