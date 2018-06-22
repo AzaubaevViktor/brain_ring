@@ -2,31 +2,42 @@
 #include "CyberLib.h"
 #include <printf.h>
 
-#include "nrf_init/nrf_init.h"
+#include "../nrf_init/nrf_init.h"
 
-MyRadio *_radio;
+// Прерывания для кнопки (вешается на 3й пин)
+uint32_t btnTime = 0;
 
+void setBtn() {
+    btnTime = micros();
+}
+
+
+MyRadio *radio;
 
 void setup()
 {
+    // прерывание
+    pinMode(3, INPUT_PULLUP);
+    attachInterrupt(1, setBtn, FALLING);
+
     Serial.begin(115200);
     Serial.print("Hi!\n");
     printf_begin();
-    _radio = new MyRadio(PIPE_RED);
-    _radio->slaveMode();
-    _radio->printDetails();
+    radio = new MyRadio(PIPE_RED);
+    radio->slaveMode();
+    radio->printDetails();
 }
 
-long i = 0;
+SlaveData sd;
+MasterData md;
 
 void loop() {
-    SlaveData sd;
-    memset(&sd, 0, 32);
-    MasterData md;
-    memset(&md, 0, 32);
-
-    sd.btnTime = micros();
-    if (_radio->slaveReceive(sd, md)) {
+    sd.btnTime = btnTime;
+    if (radio->slaveReceive(sd, md)) {
       printMD(md);
+      if (md.needDrop) {
+          btnTime = 0;
+      }
+      printf("bT: %" PRIu32 "\r\n", btnTime);
     }
 }

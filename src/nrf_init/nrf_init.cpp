@@ -1,14 +1,14 @@
 #include "nrf_init.h"
 
 void printMD(MasterData &md) {
-  printf("dataCheck: %" PRIu8 "\r\n"
-         "state    : %" PRIu8 "\r\n"
-         "player   : %" PRIu8 "\r\n"
-         "startSend: %" PRIu32 "\r\n"
-         "endSend  : %" PRIu32 "\r\n"
-         "error    : %" PRIu8  "\r\n"
-         "isData   : %" PRIu8 "\r\n"
-         "======================\r\n",
+  printf("dC:%" PRIu8 "\r\n"
+         "st:%" PRIu8 "\r\n"
+         "pl:%" PRIu8 "\r\n"
+         "sS:%" PRIu32 "\r\n"
+         "eS:%" PRIu32 "\r\n"
+         "er:%" PRIu8  "\r\n"
+         "iD:%" PRIu8 "\r\n"
+         "===\r\n",
     md.dataCheck,
     md.state,
     md.player,
@@ -19,20 +19,25 @@ void printMD(MasterData &md) {
 }
 
 void printSD(SlaveData &sd) {
-    printf("slaveTime: %" PRIu32 "\r\n"
-           "btnTime  : %" PRIu32 "\r\n"
-           "dataCheck: %" PRIu8  "\r\n"
-           "error    : %" PRIu8  "\r\n"
-           "======================\r\n",
-    sd.slaveTime,
-    sd.btnTime,
-    sd.dataCheck,
-    sd.error);
+    if (sd.dataCheck == 13) {
+        printf("slvTime:%" PRIu32 "\r\n"
+               "btnTime:%" PRIu32 "\r\n"
+               // "dC:%" PRIu8  "\r\n"
+               // "er:%" PRIu8  "\r\n"
+        , sd.slaveTime
+        , sd.btnTime
+        // , sd.dataCheck
+        // , sd.error
+        );
+    } else {
+        printf("ERR\r\n");
+    }
 }
 
 
 MyRadio::MyRadio(pipe_t myPipe) {
     // Загружаем имя pipe к себе
+    this->myPipe = (char *) calloc(5, sizeof(char));
     memcpy(this->myPipe, myPipe, 5);
     init();
 }
@@ -58,6 +63,7 @@ void MyRadio::init() {
     radio.setCRCLength(RF24_CRC_16); // длинна контрольной суммы 8-bit or 16-bit
     radio.setChannel(0x7f);         // установка канала
     radio.openReadingPipe(1, (byte *) myPipe); // Откуда читаем
+
     /*
     Master:                      Slave:
     W: Red      ==============>  R: _Red_
@@ -88,7 +94,7 @@ void MyRadio::masterMode() {
 }
 
 // Только в режиме master!
-void MyRadio::changePipe(byte * pipe) {
+void MyRadio::changePipe(pipe_t pipe) {
     radio.openWritingPipe((byte *) pipe);
 }
 
