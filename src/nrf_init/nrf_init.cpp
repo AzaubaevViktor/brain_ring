@@ -126,6 +126,11 @@ void MyRadio::masterSend(SlaveData &sd, MasterData &md) {
         md.error = ERR_SEND;
     }
     md.endSend = micros();
+    if (md.endSend < md.startSend) {
+        uint32_t r = md.startSend;
+        md.startSend = md.endSend;
+        md.endSend = r;
+    }
 }
 
 

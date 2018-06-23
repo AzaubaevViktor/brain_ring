@@ -63,8 +63,6 @@ Master::Master(bool debug) {
     pinMode(2, INPUT_PULLUP);
     pinMode(3, INPUT_PULLUP);
 
-    md.state = S_WAITING;
-
     Serial.begin(115200);
     printf_begin();
     printf("Master\n\r");
@@ -84,12 +82,7 @@ void Master::query() {
         // Нужно ли сбрасывать нажатие кнопки на slave
         radio->masterSend(sd[i], md);
 
-        // slave[i].applyNetInfo(md.endSend - md.startSend, md.error);
-        printMD(md);
-        Serial.print(md.endSend - md.startSend);
-        Serial.print(" ");
-        Serial.print(md.error);
-        Serial.print("; ");
+        slave[i].applyNetInfo(md.endSend - md.startSend, md.error);
         // Выставляем время соединения для отображения качества соединения
 
         if (md.error) continue;
@@ -156,6 +149,10 @@ void Master::logic() {
 
     changeState = false;
     switch (md.state) {
+        case S_UNKNOWN_STATE: {
+                md.state = S_WAITING;
+                changeState = true;
+            }
         case S_WAITING: {
             if (S) {
                 md.state = S_FALSESTART;
@@ -214,6 +211,7 @@ uint32_t Master::step() {
     switch (md.state) {
         case S_WAITING: {
             timeLeft = 0;
+            md.player = -1;
             break;
         }
 
@@ -223,6 +221,7 @@ uint32_t Master::step() {
         }
 
         case S_GAME: {
+            md.player = -1;
             if (0 == timeLeft) {
                 timeLeft = roundTime;
             } else {
@@ -351,26 +350,37 @@ void loop() {
 
     lcd.setCursor(0, 1);
     switch (master->md.state) {
-        case S_WAITING: lcd.print("Wait    ");
+        case S_WAITING:
+            if (master->changeState) lcd.print("Wait      ");
             break;
-        case S_FALSESTART: lcd.print("FlSt ");
-            lcd.print(master->md.player);
-            lcd.print(" ");
+        case S_FALSESTART:
+            if (master->changeState) lcd.print("FalseStart");
             break;
-        case S_GAME: lcd.print("Game ");
+        case S_GAME:
+            lcd.print("Game ");
             lcd.print(master->timeLeft / 1000000);
-            lcd.print(" ");
+            lcd.print("   ");
             break;
         case S_ANSWER:
-            lcd.print("Answ ");
-            lcd.print(master->md.player);
+            if (master->changeState) lcd.print("Answer    ");
             break;
     }
 
+    for (int i = 0; i < 4; ++i) {
+        if (i == master->md.player) {
+            lcd.setCursor(i * 4, 0);
+            lcd.print('>');
+            lcd.setCursor(i * 4 + 3, 0);
+            lcd.print('<');
+        } else {
+            lcd.setCursor(i * 4, 0);
+            lcd.print(' ');
+            lcd.setCursor(i * 4 + 3, 0);
+            lcd.print(' ');
+        }
+    }
     lcd.setCursor(14, 1);
     lcd.print(fps);
-
-    delay_ms(10);
 
     fps = 1000000 / (micros() - start);
 }
