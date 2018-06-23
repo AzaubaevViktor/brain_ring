@@ -3,7 +3,7 @@
 void printMD(MasterData &md) {
   printf("dC:%" PRIu8 "\r\n"
          "st:%" PRIu8 "\r\n"
-         "pl:%" PRIu8 "\r\n"
+         "pl:%" PRIi8 "\r\n"
          "sS:%" PRIu32 "\r\n"
          "eS:%" PRIu32 "\r\n"
          "er:%" PRIu8  "\r\n"
@@ -51,7 +51,7 @@ void MyRadio::init() {
     // Выставляем автоматический ответ на пришедшее сообщение
     radio.setAutoAck(1);                    // Ensure autoACK is enabled
     radio.enableAckPayload();
-    radio.setRetries(2, 5);                 // Smallest time between retries, max no. of retries
+    radio.setRetries(1, 1);                 // Smallest time between retries, max no. of retries
     // One retry ~500us
 
     // Размер ответа -- 32 байта

@@ -26,3 +26,9 @@ void Slave::addMeasure(uint32_t masterTime, uint32_t slaveTime) {
 void Slave::addPress(uint32_t btnPressSlaveTime) {
     btnTime = alpha * btnPressSlaveTime + beta;
 }
+
+
+void Slave::applyNetInfo(uint32_t linkTime, uint8_t error) {
+    this->linkTime = this->linkTime * 0.5 + linkTime * 0.5;
+    this->errors = errors * 0.5 + (error != 0) * 0.5;
+}

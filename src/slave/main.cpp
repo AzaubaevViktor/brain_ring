@@ -7,8 +7,13 @@
 // Прерывания для кнопки (вешается на 3й пин)
 uint32_t btnTime = 0;
 
+SlaveData sd;
+MasterData md;
+
 void setBtn() {
-    btnTime = micros();
+    if ((S_GAME == md.state) || (S_WAITING == md.state)) {
+        btnTime = micros();
+    }
 }
 
 
@@ -23,13 +28,12 @@ void setup()
     Serial.begin(115200);
     Serial.print("Hi!\n");
     printf_begin();
-    radio = new MyRadio(PIPE_RED);
+    radio = new MyRadio(PIPE_GREEN);
     radio->slaveMode();
     radio->printDetails();
 }
 
-SlaveData sd;
-MasterData md;
+
 
 void loop() {
     sd.btnTime = btnTime;
